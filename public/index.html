@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="./images/logo512.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Trenutno vrijeme PWA" />
+    <link rel="apple-touch-icon" href="./images/logo512.png" />
+    <link rel="manifest" href="./manifest.json" />
+    <title>Trenutno vrijeme</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./serviceworker.js')
+            .then((registration) => {
+                console.log('Uspjeh: ', registration.scope);
+
+                // Store data in Service Worker
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        action: 'storeData',
+                        key: 'searchData',
+                        data: { city: 'CityName', time: '12:34 PM' }
+                    });
+                }
+
+                // Retrieve data from Service Worker
+                if ('MessageChannel' in window) {
+                    const messageChannel = new MessageChannel();
+                    messageChannel.port1.onmessage = (event) => {
+                        const data = event.data;
+                        // Handle retrieved data
+                    };
+
+                    navigator.serviceWorker.controller.postMessage(
+                        { action: 'retrieveData', key: 'searchData' },
+                        [messageChannel.port2]
+                    );
+                }
+            })
+            .catch((error) => {
+                console.log('Greška: ', error);
+            });
+    });
+}
+
+    </script>
+  </body>
+</html>
