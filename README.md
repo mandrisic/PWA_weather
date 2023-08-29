@@ -1,4 +1,4 @@
-# Weather app available on URL: https://timely-lolly-43a1cb.netlify.app/  
+# Weather app available on URL: https://warm-cascaron-65282e.netlify.app/
 
 # Getting Started with Create React App
 
