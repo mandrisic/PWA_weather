@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import { fetchWeather } from './api/fetchWeather';
 import './App.css';
 
 const App = () => {
     const [query, setQuery] = useState('');
     const [weather, setWeather] = useState({});
-    
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+    useEffect(() => {
+        // Postavite osluškivače za online/offline promjene
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        // Uklanjanje osluškivača prilikom čišćenja komponente
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
+    const handleOnline = () => {
+        setIsOnline(true);
+    };
+
+    const handleOffline = () => {
+        setIsOnline(false);
+    };
+
     const search = async (e) => {
         if(e.key === 'Enter') {
             const data = await fetchWeather(query);
@@ -33,6 +53,9 @@ const App = () => {
                         <img className="city-icon" src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].description} />
                         <p>{weather.weather[0].description}</p>
                     </div>
+                    <div id="status" className={isOnline ? "online-status" : "offline-status"}>
+                    {isOnline ? "ONLINE" : "OFFLINE"}
+                </div>
                 </div>
             )}
         </div>

@@ -97,6 +97,8 @@ self.addEventListener('message', (event) => {
         retrieveData(key).then((data) => {
             event.source.postMessage(data);
         });
+    } else if (event.data.action === 'getOnlineStatus') {
+        event.source.postMessage({ type: 'onlineStatus', isOnline: navigator.onLine });
     }
 });
 
@@ -112,6 +114,12 @@ self.addEventListener('activate', (event) => {
                     return caches.delete(cacheName);
                 }
             })
-        ))
-    )
+        )).then(() => {
+            self.clients.matchAll().then(clients => {
+                clients.forEach(client => {
+                    client.postMessage({ type: 'onlineStatus', isOnline: navigator.onLine });
+                });
+            });
+        })
+    );
 });

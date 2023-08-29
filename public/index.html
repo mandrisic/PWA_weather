@@ -35,6 +35,7 @@ if ('serviceWorker' in navigator) {
                     const messageChannel = new MessageChannel();
                     messageChannel.port1.onmessage = (event) => {
                         const data = event.data;
+                        console.log('Retrieved data:', data);
                         // Handle retrieved data
                     };
 
