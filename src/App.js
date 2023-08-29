@@ -8,11 +8,10 @@ const App = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     useEffect(() => {
-        // Postavite osluškivače za online/offline promjene
+
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 
-        // Uklanjanje osluškivača prilikom čišćenja komponente
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
