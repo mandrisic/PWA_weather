@@ -1,4 +1,4 @@
-const CACHE_NAME = "version-1";
+const CACHE_NAME = "version-5";
 const urlsToCache = ['index.html', 'offline.html'];
 
 const self = this;
@@ -69,6 +69,10 @@ self.addEventListener('fetch', (event) => {
             .then((cacheResponse) => {
                 if (cacheResponse) {
                     return cacheResponse;
+                }
+
+                if (event.request.url.includes('offline.html')) {
+                    return caches.match('offline.html');
                 }
 
                 return fetch(event.request)

@@ -20,32 +20,7 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./serviceworker.js')
             .then((registration) => {
                 console.log('Uspjeh: ', registration.scope);
-
-                // Store data in Service Worker
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        action: 'storeData',
-                        key: 'searchData',
-                        data: { city: 'CityName', time: '12:34 PM' }
-                    });
-                }
-
-                // Retrieve data from Service Worker
-                if ('MessageChannel' in window) {
-                    const messageChannel = new MessageChannel();
-                    messageChannel.port1.onmessage = (event) => {
-                        const data = event.data;
-                        console.log('Retrieved data:', data);
-                        // Handle retrieved data
-                    };
-
-                    navigator.serviceWorker.controller.postMessage(
-                        { action: 'retrieveData', key: 'searchData' },
-                        [messageChannel.port2]
-                    );
-                }
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 console.log('Greška: ', error);
             });
     });

@@ -31,6 +31,13 @@ const App = () => {
             const data = await fetchWeather(query);
 
             setWeather(data);
+            if (navigator.serviceWorker.controller){
+                navigator.serviceWorker.controller.postMessage({
+                    action: 'storeData',
+                    key: 'podaci',
+                    data: {"datum": new Date(), "data": data}
+                });
+            }
             setQuery('');
         }
     }
