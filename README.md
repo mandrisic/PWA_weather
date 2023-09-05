@@ -1,4 +1,4 @@
-# Weather app available on URL: https://legendary-kringle-31cece.netlify.app/
+# Weather app available on URL: https://sweet-belekoy-596315.netlify.app 
 
 # Getting Started with Create React App
 
