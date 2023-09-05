@@ -21,9 +21,8 @@ function openDatabase() {
         request.onerror = (event) => {
             reject(event.target.error);
         };
-    });0
-    Ž
-    Ć_ }
+    });
+}
 
 function storeData(key, data) {
     openDatabase().then((db) => {
