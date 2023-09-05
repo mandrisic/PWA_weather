@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { fetchWeather } from './api/fetchWeather';
 import './App.css';
 
+import ServiceWorkerStorage from 'serviceworker-storage';
+import { format } from 'date-fns';
+const storage = new ServiceWorkerStorage('podaci', 1);
+
 const App = () => {
     const [query, setQuery] = useState('');
     const [weather, setWeather] = useState({});
+    const [datum,setDatum] = useState({});
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     useEffect(() => {
@@ -28,15 +33,17 @@ const App = () => {
 
     const search = async (e) => {
         if(e.key === 'Enter') {
-            const data = await fetchWeather(query);
-
-            setWeather(data);
-            if (navigator.serviceWorker.controller){
-                navigator.serviceWorker.controller.postMessage({
-                    action: 'storeData',
-                    key: 'podaci',
-                    data: {"datum": new Date(), "data": data}
-                });
+            let data = await fetchWeather(query);
+                if(data==null){
+                    storage.getItem(query).then(value => {
+                        data = value.data;
+                        setWeather(data);
+                        setDatum(format(value.datum, 'dd. MM. YYY, hh:mm:ss'));
+                    });
+            }else {
+                setWeather(data);
+                setDatum("");
+                storage.setItem(query,  {"datum": new Date(), "data": data});
             }
             setQuery('');
         }
@@ -44,7 +51,7 @@ const App = () => {
 
     return (
         <div className="main-container">
-            <input type="text"className="search"placeholder="Traži..."value={query}onChange={(e) => setQuery(e.target.value)}onKeyPress={search}/>
+            <input type="text" className="search" placeholder="Traži..." value={query}onChange={(e) => setQuery(e.target.value)}onKeyPress={search}/>
             {weather.main && (
                 <div className="city">
                     <h2 className="city-name">
@@ -60,7 +67,8 @@ const App = () => {
                         <p>{weather.weather[0].description}</p>
                     </div>
                     <div id="status" className={isOnline ? "online-status" : "offline-status"}>
-                    {isOnline ? "ONLINE" : "OFFLINE"}
+                    {isOnline ? "ONLINE " : "OFFLINE "}
+                    {isOnline ? "" : datum}
                 </div>
                 </div>
             )}

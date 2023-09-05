@@ -1,4 +1,4 @@
-const CACHE_NAME = "version-5";
+const CACHE_NAME = "version-8";
 const urlsToCache = ['index.html', 'offline.html'];
 
 const self = this;
@@ -21,8 +21,9 @@ function openDatabase() {
         request.onerror = (event) => {
             reject(event.target.error);
         };
-    });
-}
+    });0
+    Ž
+    Ć_ }
 
 function storeData(key, data) {
     openDatabase().then((db) => {
@@ -65,31 +66,32 @@ self.addEventListener('install', (event) => {
 // Listen for requests
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
-            .then((cacheResponse) => {
-                if (cacheResponse) {
-                    return cacheResponse;
-                }
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                return cache.match(event.request)
+                    .then((cacheResponse) => {
+                        if (cacheResponse) {
+                            return cacheResponse;
+                        }
 
-                if (event.request.url.includes('offline.html')) {
-                    return caches.match('offline.html');
-                }
+                        if (event.request.url.includes('api.openweathermap.org')) {
+                            return fetch(event.request)
+                                .then((fetchResponse) => {
+                                    const responseToCache = fetchResponse.clone();
+                                    cache.put(event.request, responseToCache);
+                                    return fetchResponse;
+                                })
+                                .catch(() => caches.match('offline.html'));
+                        }
 
-                return fetch(event.request)
-                    .then((fetchResponse) => {
-                        const responseToCache = fetchResponse.clone();
-
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return fetchResponse;
-                    })
-                    .catch(() => caches.match('offline.html'));
+                        return fetch(event.request)
+                            .catch(() => caches.match('offline.html'));
+                    });
             })
-    )
+    );
 });
+
+
 
 // Handle message from page
 self.addEventListener('message', (event) => {
